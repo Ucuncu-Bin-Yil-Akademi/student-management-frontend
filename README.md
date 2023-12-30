@@ -1,4 +1,4 @@
-# student-management-frontend-3
+# student-management-frontend
 
 ## Build Setup
 
