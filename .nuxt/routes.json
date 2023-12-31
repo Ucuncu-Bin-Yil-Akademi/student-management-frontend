@@ -1,0 +1,16 @@
+[
+  {
+    "name": "dashboard",
+    "path": "/dashboard",
+    "component": "/Users/canberk/MyProjects/student-management-frontend/pages/dashboard.vue",
+    "chunkName": "pages/dashboard",
+    "_name": "_4795b096"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "/Users/canberk/MyProjects/student-management-frontend/pages/index.vue",
+    "chunkName": "pages/index",
+    "_name": "_d7083658"
+  }
+]

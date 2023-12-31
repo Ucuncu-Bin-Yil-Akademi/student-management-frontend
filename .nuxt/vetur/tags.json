@@ -1,0 +1,26 @@
+{
+  "Attendance": {
+    "description": "Auto imported from components/Attendance.vue"
+  },
+  "Classes": {
+    "description": "Auto imported from components/Classes.vue"
+  },
+  "DashboardMain": {
+    "description": "Auto imported from components/DashboardMain.vue"
+  },
+  "DashboardPanel": {
+    "description": "Auto imported from components/DashboardPanel.vue"
+  },
+  "Instructors": {
+    "description": "Auto imported from components/Instructors.vue"
+  },
+  "Login": {
+    "description": "Auto imported from components/Login.vue"
+  },
+  "ModalComponent": {
+    "description": "Auto imported from components/ModalComponent.vue"
+  },
+  "Students": {
+    "description": "Auto imported from components/Students.vue"
+  }
+}

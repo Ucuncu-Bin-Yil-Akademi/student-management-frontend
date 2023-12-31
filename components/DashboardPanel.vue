@@ -73,12 +73,12 @@ export default {
       {
         title: "Toplam Eğitmen",
         value: 23,
-        color: "green",
+        color: "purple",
       },
       {
         title: "Toplam Sınıf",
         value: 26,
-        color: "blue",
+        color: "red",
       },
     ],
 
