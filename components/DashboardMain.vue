@@ -3,7 +3,7 @@
     <div class="w-full bg-purple-800">
       <div class="w-full flex p-5 justify-between items-center">
         <h1 class="text-2xl text-white">Yönetim Paneli</h1>
-        <v-btn color="primary" dark>Çıkış Yap</v-btn>
+        <v-btn color="primary" dark @click="logout">Çıkış Yap</v-btn>
       </div>
     </div>
 
@@ -52,9 +52,15 @@ import Students from "./Students.vue";
 import Instructors from "./Instructors.vue";
 import Attendance from "./Attendance.vue";
 import Classes from "./Classes.vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "DashboardMain",
+  created() {
+    if (!this.getUser) {
+      this.$router.push("/");
+    }
+  },
   data: () => ({
     selectedItem: 0,
     items: [
@@ -85,5 +91,18 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapGetters(["getUser"]),
+
+    user() {
+      return this.getUser;
+    },
+  },
+  methods: {
+    logout() {
+      this.$store.commit("LOGOUT");
+      this.$router.push("/");
+    },
+  },
 };
 </script>

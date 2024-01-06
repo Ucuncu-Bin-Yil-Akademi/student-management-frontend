@@ -1,17 +1,14 @@
 <template>
   <div>
     <div class="flex gap-5 p-5">
-      <div
-        v-for="card in cards"
-        :class="`bg-${card.color}-700 p-5 w-1/3 rounded`"
-      >
+      <div v-for="card in cards" class="bg-gray-500 p-5 w-1/3 rounded">
         <h1 class="text-white text-2xl" v-text="card.title"></h1>
         <span class="text-4xl text-white">{{ card.value }}</span>
       </div>
     </div>
 
     <h1 class="text-2xl px-5 py-3 text-gray-600">Son Açılan Sınıflar</h1>
-    <div class="flex p-5">
+    <div class="flex gap-3 p-5">
       <v-card
         class="mx-auto"
         max-width="344"
@@ -35,7 +32,7 @@
     </div>
 
     <h1 class="text-2xl px-5 py-3 text-gray-600">Son Kayıt Olan Öğrenciler</h1>
-    <div class="flex p-5">
+    <div class="flex gap-3 p-5">
       <v-card
         class="mx-auto"
         max-width="344"
