@@ -2,7 +2,9 @@
   <v-app>
     <div>
       <div class="p-5 flex justify-between">
-        <h2 class="text-2xl font-bold text-gray-600">Tüm Öğrenciler (543)</h2>
+        <h2 class="text-2xl font-bold text-gray-600">
+          Tüm Öğrenciler ({{ students?.length || 0 }})
+        </h2>
         <div class="flex justify-end gap-5">
           <v-dialog v-model="newStudentDialog" width="750">
             <template v-slot:activator="{ on, attrs }">

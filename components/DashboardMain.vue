@@ -15,7 +15,7 @@
           </v-avatar>
 
           <div class="">
-            <span>Canberk Beren</span>
+            <span>{{ user.name }} {{ user.lastName }}</span>
 
             <div class="flex items-center gap-2">
               <div class="h-2 w-2 rounded-full bg-green-500"></div>
@@ -23,14 +23,16 @@
             </div>
           </div>
         </div>
-
         <v-list nav dense>
           <v-list-item-group v-model="selectedItem" color="primary">
-            <v-list-item v-for="(item, i) in items" :key="i">
+            <v-list-item
+              v-for="(item, i) in items"
+              :key="i"
+              v-if="item.allowedRoles.includes(user.role)"
+            >
               <v-list-item-icon>
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-icon>
-
               <v-list-item-content>
                 <v-list-item-title>{{ item.text }}</v-list-item-title>
               </v-list-item-content>
@@ -52,6 +54,7 @@ import Students from "./Students.vue";
 import Instructors from "./Instructors.vue";
 import Attendance from "./Attendance.vue";
 import Classes from "./Classes.vue";
+import Admins from "./Admins.vue";
 import { mapGetters } from "vuex";
 
 export default {
@@ -68,26 +71,37 @@ export default {
         text: "Yönetim Paneli",
         icon: "mdi-monitor-dashboard",
         component: DashboardPanel,
+        allowedRoles: ["manager", "instructor", "editor"],
       },
       {
         text: "Öğrenciler",
         icon: "mdi-account-multiple",
         component: Students,
+        allowedRoles: ["manager", "editor"],
       },
       {
         text: "Eğitmenler",
         icon: "mdi-human-male-board",
         component: Instructors,
+        allowedRoles: ["manager", "editor"],
       },
       {
         text: "Yoklama",
         icon: "mdi-account-group-outline",
         component: Attendance,
+        allowedRoles: ["manager", "instructor", "editor"],
       },
       {
         text: "Sınıflar",
         icon: "mdi-school",
         component: Classes,
+        allowedRoles: ["manager", "editor"],
+      },
+      {
+        text: "Yöneticiler",
+        icon: "mdi-account-tie",
+        component: Admins,
+        allowedRoles: ["manager"],
       },
     ],
   }),

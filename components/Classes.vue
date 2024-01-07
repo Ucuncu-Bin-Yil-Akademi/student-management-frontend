@@ -43,6 +43,9 @@
 
                 <v-select
                   :items="instructors"
+                  :item-text="(item) => `${item.name} ${item.lastName}`"
+                  :item-value="(item) => `${item._id}`"
+                  v-model="newClass.instructor"
                   label="Eğitmen Seçiniz"
                   outlined
                   dense
@@ -50,8 +53,12 @@
                 ></v-select>
 
                 <v-select
-                  :items="instructors"
+                  :items="students"
+                  v-model="newClass.students"
+                  multiple
                   label="Öğrencileri Seçiniz"
+                  :item-text="(item) => `${item.name} ${item.lastName}`"
+                  :item-value="(item) => `${item._id}`"
                   outlined
                   dense
                   class="w-full mt-5"
@@ -191,19 +198,24 @@
                         v-model="editClassForm.totalHours"
                       ></v-text-field>
                     </div>
-
                     <v-select
-                      :items="editClassForm.instructor"
+                      :items="instructors"
+                      :item-text="(item) => `${item.name} ${item.lastName}`"
+                      :item-value="(item) => `${item._id}`"
+                      v-model="editClassForm.instructor"
                       label="Eğitmen Seçiniz"
                       outlined
                       dense
                       class="w-full mt-5"
                     ></v-select>
-
                     <v-select
-                      :items="editClassForm.students"
+                      v-model="editClassForm.students"
+                      :items="students"
+                      :item-text="(item) => `${item.name} ${item.lastName}`"
+                      :item-value="(item) => `${item._id}`"
                       label="Öğrencileri Seçiniz"
                       outlined
+                      multiple
                       dense
                       class="w-full mt-5"
                     ></v-select>
@@ -354,10 +366,13 @@ export default {
       totalHours: 0,
     },
     classes: [],
-    instructors: ["Canberk Beren", "Mehmet Yılmaz", "Ayşe Yılmaz"],
+    students: [],
+    instructors: [],
   }),
-  created() {
-    this.getClasses();
+  async created() {
+    await this.getClasses();
+    await this.getStudents();
+    await this.getInstructors();
   },
   methods: {
     formatDate(date) {
@@ -365,6 +380,7 @@ export default {
     },
     handleEditClass(activeClass) {
       this.editClassModal = true;
+      console.log(activeClass);
       this.editClassForm = {
         _id: activeClass._id,
         courseName: activeClass.courseName,
@@ -375,16 +391,26 @@ export default {
         totalHours: activeClass.totalHours,
       };
     },
-    getClasses() {
-      axios.get("http://localhost:3000/classes").then((res) => {
+    async getStudents() {
+      await axios.get("http://localhost:3000/students/").then((res) => {
+        this.students = res.data;
+      });
+    },
+    async getInstructors() {
+      await axios.get("http://localhost:3000/instructors/").then((res) => {
+        this.instructors = res.data;
+      });
+    },
+    async getClasses() {
+      await axios.get("http://localhost:3000/classes").then((res) => {
         this.classes = res.data;
       });
     },
     createClass() {
       const reqBody = {
         courseName: this.newClass.name,
-        instructor: null,
-        students: [],
+        instructor: this.newClass.instructor,
+        students: this.newClass.students,
         startDate: this.startDate,
         endDate: this.endDate,
         totalHours: this.newClass.totalHours,

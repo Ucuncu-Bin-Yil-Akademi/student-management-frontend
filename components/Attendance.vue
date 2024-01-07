@@ -1,86 +1,103 @@
 <template>
-  <div class="p-3">
-    <h1 class="text-2xl text-gray-800">Yoklama İşlemleri</h1>
+  <v-app>
+    <div class="p-3">
+      <h1 class="text-2xl text-gray-800">Yoklama İşlemleri</h1>
 
-    <div class="flex items-center gap-3 mt-5">
-      <select
-        class="w-1/2 p-2"
-        style="border: 1px solid #d1d5db"
-        v-model="selectedCourse"
-      >
-        <option value="" disabled selected>Kurs Seçiniz</option>
-        <option v-for="course in classes" :key="course">{{ course }}</option>
-      </select>
-      <div class="w-1/2">
-        <input
-          class="p-2 w-full"
-          style="border: 1px solid #d1d5db"
-          type="text"
-          v-model="date"
-          placeholder="Lütfen yoklama tarihi seçiniz"
-          @click="isDatePickerOpen = true"
+      <div class="flex items-center gap-3 mt-5">
+        <v-select
+          solo
+          class="w-1/2"
+          v-model="selectedCourse"
+          label="Kurs Seçiniz"
+          :items="classes"
+          item-value="_id"
+          item-text="courseName"
         />
-        <div class="w-full absolute">
-          <v-date-picker v-model="date" dark no-title v-if="isDatePickerOpen">
-            <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="isDatePickerOpen = false">
-              Cancel
-            </v-btn>
-            <v-btn text color="primary" @click="isDatePickerOpen = false">
-              OK
-            </v-btn>
-          </v-date-picker>
+        <div class="w-1/2">
+          <v-text-field
+            solo
+            type="text"
+            v-model="date"
+            placeholder="Lütfen yoklama tarihi seçiniz"
+            @click="isDatePickerOpen = true"
+          />
+          <div class="w-full absolute">
+            <v-date-picker v-model="date" dark no-title v-if="isDatePickerOpen">
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="isDatePickerOpen = false">
+                Cancel
+              </v-btn>
+              <v-btn text color="primary" @click="isDatePickerOpen = false">
+                OK
+              </v-btn>
+            </v-date-picker>
+          </div>
+        </div>
+      </div>
+      <div class="w-full flex justify-end">
+        <v-btn dark @click="getAttendance">Yoklamayı Getir</v-btn>
+      </div>
+
+      <div class="mt-5">
+        <table
+          v-if="students?.length > 0"
+          class="table-auto w-full bg-gray-300"
+        >
+          <thead>
+            <tr>
+              <th class="px-4 py-2">Mevcut</th>
+              <th class="px-4 py-2">Ad Soyad</th>
+              <th class="px-4 py-2">E-posta</th>
+              <th class="px-4 py-2">Kurs</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="student in students" :key="student.id" class="rows">
+              <td class="border px-4 py-2">
+                <v-checkbox
+                  label="Evet"
+                  :value="student._id"
+                  v-model="selected"
+                ></v-checkbox>
+              </td>
+              <td class="border px-4 py-2">
+                {{ student.name }} {{ student.lastName }}
+              </td>
+              <td class="border px-4 py-2">{{ student.mail }}</td>
+              <td class="border px-4 py-2">
+                {{
+                  classes.find(
+                    (course) => course?._id === student?.courses?.[0]
+                  )?.courseName
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 class="text-2xl text-gray-800" v-else>
+          Lütfen bir kurs ve tarih seçiniz.
+        </h2>
+
+        <div
+          class="my-3 w-full flex justify-end"
+          v-if="selected.length > 0 && date && selectedCourse"
+        >
+          <v-btn
+            style="background-color: rgb(29, 128, 95); color: white"
+            @click="createOrUpdateAttendance"
+            >Kaydet</v-btn
+          >
         </div>
       </div>
     </div>
-
-    <div class="mt-5">
-      <table
-        v-if="date && selectedCourse"
-        class="table-auto w-full bg-gray-300"
-      >
-        <thead>
-          <tr>
-            <th class="px-4 py-2">Mevcut</th>
-            <th class="px-4 py-2">Ad Soyad</th>
-            <th class="px-4 py-2">E-posta</th>
-            <th class="px-4 py-2">Kurs</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="student in students" :key="student.id" class="rows">
-            <td class="border px-4 py-2">
-              <v-checkbox
-                label="Evet"
-                :value="student.id"
-                @click="checkBoxClick(student.id)"
-              ></v-checkbox>
-            </td>
-            <td class="border px-4 py-2">{{ student.name }}</td>
-            <td class="border px-4 py-2">{{ student.email }}</td>
-            <td class="border px-4 py-2">{{ student.course }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2 class="text-2xl text-gray-800" v-else>
-        Lütfen bir kurs ve tarih seçiniz.
-      </h2>
-
-      <div
-        class="my-3 w-full flex justify-end"
-        v-if="selected.length > 0 && date && selectedCourse"
-      >
-        <v-btn style="background-color: rgb(29, 128, 95); color: white"
-          >Kaydet</v-btn
-        >
-      </div>
-    </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Attendance",
   data: () => ({
@@ -88,55 +105,13 @@ export default {
     selectedCourse: "",
     isDatePickerOpen: false,
     date: null,
-
-    classes: [
-      "Frontend Geliştirme Kursu",
-      "Backend Gelştirme Kursu",
-      "Mobil Uygulama Geliştirme Kursu",
-      "Siber Güvenlik Kursu",
-      "Dijital Pazarlama Kursu",
-    ],
-
-    students: [
-      {
-        id: 1,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-      {
-        id: 2,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-      {
-        id: 3,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-      {
-        id: 4,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-      {
-        id: 5,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-      {
-        id: 6,
-        name: "Ali Veli",
-        email: "",
-        course: "Frontend Geliştirme Kursu",
-      },
-    ],
+    classes: [],
+    students: [],
+    attendanceStudents: [],
   }),
-
+  created() {
+    this.getClasses();
+  },
   methods: {
     checkBoxClick(id) {
       if (this.selected.includes(id)) {
@@ -144,6 +119,67 @@ export default {
       } else {
         this.selected.push(id);
       }
+    },
+    getClasses() {
+      axios
+        .get("http://localhost:3000/classes")
+        .then((res) => {
+          this.classes = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getStudents() {
+      axios
+        .get(
+          "http://localhost:3000/classes/" + this.selectedCourse + "/students"
+        )
+        .then((res) => {
+          this.students = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getAttendance() {
+      this.selected = [];
+
+      this.getStudents();
+      const reqBody = {
+        classId: this.selectedCourse,
+        attanceDate: this.date,
+      };
+
+      axios
+        .post("http://localhost:3000/attendance/get", reqBody)
+        .then((res) => {
+          if (res.data) {
+            this.attendanceStudents = res.data[0]?.students;
+            this.attendanceStudents.forEach((student) => {
+              this.selected.push(student);
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    createOrUpdateAttendance() {
+      const reqBody = {
+        classId: this.selectedCourse,
+        attanceDate: this.date,
+        students: this.selected,
+      };
+
+      axios
+        .post("http://localhost:3000/attendance/record", reqBody)
+        .then((res) => {
+          this.getAttendance();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 };
